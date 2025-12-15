@@ -83,7 +83,6 @@ services:
       - POSTGRES_DB=spshpau-db
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      # Corrected path: init-db.sh is in the scripts folder
       - ./scripts/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     networks:
       - spshpau_network
