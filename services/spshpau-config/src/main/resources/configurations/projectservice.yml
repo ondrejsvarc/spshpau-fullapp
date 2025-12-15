@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: projectservice
+  datasource:
+    url: jdbc:postgresql://postgresqldb:5432/spshpau-project-db
+    username: spshpau
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate # validate for production, create for early development, update for development
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://192.168.1.112:8080/realms/SPSHPAU
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+
+server:
+  port: 8092
+
+jwt:
+  auth:
+    converter:
+      resource-id: spshpau-rest-api
+      principle-attribute: preferred_username
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka
+
+application:
+  cofig:
+    userclienturl: http://userservice:8090/api/v1
+
+aws:
+  region: eu-north-1
+  s3:
+    bucket-name: spshpau-bucket
+    presigned-url-duration-minutes: 15
+
+  credentials:
+    access-key-id: # TBA
+    secret-access-key: # TBA
