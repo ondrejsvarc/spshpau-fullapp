@@ -1,17 +1,18 @@
 package com.spshpau.projectservice.services.filestorage;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
-
 
 import java.io.IOException;
 import java.net.URL;
@@ -21,18 +22,32 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class S3FileStorageService {
 
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
+    private final String bucketName;
+    private final long presignedUrlDurationMinutes;
 
-    @Value("${aws.s3.bucket-name}")
-    private String bucketName;
+    @Autowired
+    public S3FileStorageService(
+            @Autowired(required = false) S3Client s3Client,
+            @Autowired(required = false) S3Presigner s3Presigner,
+            @Value("${aws.s3.bucket-name:#{null}}") String bucketName,
+            @Value("${aws.s3.presigned-url-duration-minutes:60}") long presignedUrlDurationMinutes
+    ) {
+        this.s3Client = s3Client;
+        this.s3Presigner = s3Presigner;
+        this.bucketName = bucketName;
+        this.presignedUrlDurationMinutes = presignedUrlDurationMinutes;
+    }
 
-    @Value("${aws.s3.presigned-url-duration-minutes}")
-    private long presignedUrlDurationMinutes;
+    private void checkS3Configured() {
+        if (s3Client == null || s3Presigner == null || bucketName == null) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "S3 storage is not configured. This feature is currently unavailable.");
+        }
+    }
 
     /**
      * Uploads a file to S3.
@@ -42,6 +57,7 @@ public class S3FileStorageService {
      * @throws IOException If an I/O error occurs.
      */
     public String uploadFile(String key, MultipartFile file) throws IOException {
+        checkS3Configured();
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
@@ -63,6 +79,7 @@ public class S3FileStorageService {
      * @return The pre-signed URL.
      */
     public URL generatePresignedDownloadUrl(String key, String versionId) {
+        checkS3Configured();
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
@@ -85,6 +102,7 @@ public class S3FileStorageService {
      * @param versionId The specific version ID to delete.
      */
     public void deleteFileVersion(String key, String versionId) {
+        checkS3Configured();
         if (versionId == null || versionId.isEmpty() || "null".equalsIgnoreCase(versionId)) {
             log.warn("Attempted to delete object {} with null/empty versionId. This will create a delete marker if versioning is enabled, or delete the object if not versioned.", key);
             DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
@@ -111,6 +129,7 @@ public class S3FileStorageService {
      * @return A list of ObjectVersion.
      */
     public List<ObjectVersion> listObjectVersions(String objectKey) {
+        checkS3Configured();
         List<ObjectVersion> versions = new ArrayList<>();
         try {
             ListObjectVersionsRequest listRequest = ListObjectVersionsRequest.builder()
