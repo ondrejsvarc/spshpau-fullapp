@@ -8,7 +8,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: validate # validate for production, create for early development, update for development
+      ddl-auto: update # validate for production, create for early development, update for development
     show-sql: true
     properties:
       hibernate:
