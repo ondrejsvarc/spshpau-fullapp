@@ -8,11 +8,11 @@ services:
     ports:
       - "5173:80"
     environment:
-      - VITE_KEYCLOAK_URL=${VITE_KEYCLOAK_URL:-http://192.168.1.112:8080} #
+      - VITE_KEYCLOAK_URL=${VITE_KEYCLOAK_URL:-http://localhost:8081} #
       - VITE_KEYCLOAK_REALM=${VITE_KEYCLOAK_REALM:-SPSHPAU} #
       - VITE_KEYCLOAK_CLIENT_ID=${VITE_KEYCLOAK_CLIENT_ID:-spshpau-rest-api} #
-      - VITE_API_GATEWAY_URL=${VITE_API_GATEWAY_URL:-http://192.168.1.112:8081/api/v1} #
-      - VITE_CHAT_SERVICE_WS_URL=${VITE_CHAT_SERVICE_WS_URL:-http://192.168.1.112:8091/ws} #
+      - VITE_API_GATEWAY_URL=${VITE_API_GATEWAY_URL:-http://localhost:8083/api/v1} #
+      - VITE_CHAT_SERVICE_WS_URL=${VITE_CHAT_SERVICE_WS_URL:-http://localhost:8091/ws} #
     restart: unless-stopped
     container_name: spshpau-frontend
 

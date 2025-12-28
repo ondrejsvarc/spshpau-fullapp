@@ -276,11 +276,11 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_KEYCLOAK_URL: "http://localhost:${KEYCLOAK_PORT:-8080}"
+        VITE_KEYCLOAK_URL: "http://localhost:8081"
         VITE_KEYCLOAK_REALM: "SPSHPAU"
         VITE_KEYCLOAK_CLIENT_ID: "spshpau-rest-api"
-        VITE_API_GATEWAY_URL: "http://localhost:${GATEWAY_PORT:-8081}/api/v1"
-        VITE_CHAT_SERVICE_WS_URL: "http://localhost:${CHAT_SERVICE_PORT:-8091}/ws"
+        VITE_API_GATEWAY_URL: "http://localhost:8083/api/v1"
+        VITE_CHAT_SERVICE_WS_URL: "http://localhost:8091/ws"
     image: spshpau/frontend:latest
     container_name: spshpau-frontend
     restart: unless-stopped
