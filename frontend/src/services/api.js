@@ -1,6 +1,6 @@
 import keycloak from '../keycloak';
 
-const API_GATEWAY_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8081/api/v1';
+const API_GATEWAY_URL = import.meta.env.VITE_API_GATEWAY_URL || 'http://localhost:8083/api/v1';
 
 // Function to get the Keycloak token
 const getAuthHeaders = () => {
